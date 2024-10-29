@@ -1,8 +1,8 @@
 on:
   push:
-    branches: ["*"]
+    branches: ["master", "tokio-*.x"]
   pull_request:
-    branches: ["*"]
+    branches: ["master", "tokio-*.x"]
 
 name: CI
 
@@ -41,7 +41,7 @@ jobs:
   # Depends on all actions that are required for a "successful" CI run.
   tests-pass:
     name: all systems go
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     needs:
       - test-tokio-full
       - test-workspace-all-features
@@ -82,7 +82,7 @@ jobs:
   # Basic actions that must pass before we kick off more expensive tests.
   basics:
     name: basic checks
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     needs:
       - clippy
       - fmt
@@ -99,7 +99,7 @@ jobs:
       matrix:
         os:
           - windows-latest
-          - blacksmith-4vcpu-ubuntu-2204
+          - blacksmith-2vcpu-ubuntu-2204
           - macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -131,7 +131,7 @@ jobs:
       matrix:
         os:
           - windows-latest
-          - blacksmith-4vcpu-ubuntu-2204
+          - blacksmith-2vcpu-ubuntu-2204
           - macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -161,7 +161,7 @@ jobs:
       matrix:
         os:
           - windows-latest
-          - blacksmith-4vcpu-ubuntu-2204
+          - blacksmith-2vcpu-ubuntu-2204
           - macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -189,7 +189,7 @@ jobs:
       matrix:
         os:
           - windows-latest
-          - blacksmith-4vcpu-ubuntu-2204
+          - blacksmith-2vcpu-ubuntu-2204
           - macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -230,7 +230,7 @@ jobs:
     # `tokio/tokio/tests/async_send_sync.rs`.
     name: compile tests with parking lot send guards
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_stable }}
@@ -252,7 +252,7 @@ jobs:
     # their own test crate outside of the workspace.
     needs: basics
     name: test tokio instrumentation
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_stable }}
@@ -277,7 +277,7 @@ jobs:
   valgrind:
     name: valgrind
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_stable }}
@@ -315,7 +315,7 @@ jobs:
       matrix:
         include:
           - os: windows-latest
-          - os: blacksmith-4vcpu-ubuntu-2204
+          - os: blacksmith-2vcpu-ubuntu-2204
           - os: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -350,7 +350,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: blacksmith-4vcpu-ubuntu-2204
+          - os: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_stable }}
@@ -384,7 +384,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: blacksmith-4vcpu-ubuntu-2204
+          - os: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_stable }}
@@ -412,7 +412,7 @@ jobs:
   miri:
     name: miri
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_miri_nightly }}
@@ -435,7 +435,7 @@ jobs:
   asan:
     name: asan
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install llvm
@@ -457,7 +457,7 @@ jobs:
   semver:
     name: semver
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Check semver
@@ -469,7 +469,7 @@ jobs:
   cross-check:
     name: cross-check
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
         target:
@@ -492,7 +492,7 @@ jobs:
   cross-check-tier3:
     name: cross-check-tier3
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
         target:
@@ -516,7 +516,7 @@ jobs:
 
   cross-test-with-parking_lot:
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
         include:
@@ -556,7 +556,7 @@ jobs:
 
   cross-test-without-parking_lot:
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
         include:
@@ -602,7 +602,7 @@ jobs:
   no-atomic-u64-test:
     name: Test tokio --all-features on i686-unknown-linux-gnu without AtomicU64
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_nightly }}
@@ -633,7 +633,7 @@ jobs:
   no-atomic-u64-check:
     name: Check tokio --feature-powerset --depth 2 on i686-unknown-linux-gnu without AtomicU64
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_nightly }}
@@ -658,7 +658,7 @@ jobs:
   features:
     name: features ${{ matrix.name }}
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
         include:
@@ -685,7 +685,7 @@ jobs:
 
   minrust:
     name: minrust
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_min }}
@@ -701,7 +701,7 @@ jobs:
   minimal-versions:
     name: minimal-versions
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_nightly }}
@@ -733,7 +733,7 @@ jobs:
 
   fmt:
     name: fmt
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_stable }}
@@ -753,7 +753,7 @@ jobs:
 
   clippy:
     name: clippy
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_clippy }}
@@ -768,7 +768,7 @@ jobs:
 
   docs:
     name: docs
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_nightly }}
@@ -786,7 +786,7 @@ jobs:
   loom-compile:
     name: build loom tests
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_stable }}
@@ -802,7 +802,7 @@ jobs:
 
   check-readme:
     name: Check README
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Verify that both READMEs are identical
@@ -820,7 +820,7 @@ jobs:
       matrix:
         os:
           - windows-latest
-          - blacksmith-4vcpu-ubuntu-2204
+          - blacksmith-2vcpu-ubuntu-2204
           - macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -872,7 +872,7 @@ jobs:
       matrix:
         os:
           - windows-latest
-          - blacksmith-4vcpu-ubuntu-2204
+          - blacksmith-2vcpu-ubuntu-2204
           - macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -917,7 +917,7 @@ jobs:
   x86_64-fortanix-unknown-sgx:
     name: build tokio for x86_64-fortanix-unknown-sgx
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_nightly }}
@@ -934,7 +934,7 @@ jobs:
   check-redox:
     name: build tokio for redox-os
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_nightly }}
@@ -949,7 +949,7 @@ jobs:
   wasm32-unknown-unknown:
     name: test tokio for wasm32-unknown-unknown
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust 1.81
@@ -967,7 +967,7 @@ jobs:
   wasm32-wasip1:
     name: ${{ matrix.target }}
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
         target:
@@ -1031,7 +1031,7 @@ jobs:
       matrix:
         os:
           - windows-latest
-          - blacksmith-4vcpu-ubuntu-2204
+          - blacksmith-2vcpu-ubuntu-2204
         rust:
           # `check-external-types` requires a specific Rust nightly version. See
           # the README for details: https://github.com/awslabs/cargo-check-external-types
@@ -1057,7 +1057,7 @@ jobs:
   check-unexpected-lints-cfgs:
     name: check unexpected lints and cfgs
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_nightly }}
@@ -1074,7 +1074,7 @@ jobs:
   check-fuzzing:
     name: check-fuzzing
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_nightly }}
@@ -1094,7 +1094,7 @@ jobs:
   check-spelling:
     name: check-spelling
     needs: basics
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_stable }}
