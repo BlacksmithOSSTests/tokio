@@ -41,7 +41,7 @@ jobs:
   # Depends on all actions that are required for a "successful" CI run.
   tests-pass:
     name: all systems go
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     needs:
       - test-tokio-full
       - test-workspace-all-features
@@ -82,7 +82,7 @@ jobs:
   # Basic actions that must pass before we kick off more expensive tests.
   basics:
     name: basic checks
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     needs:
       - clippy
       - fmt
@@ -99,7 +99,7 @@ jobs:
       matrix:
         os:
           - windows-latest
-          - blacksmith-2vcpu-ubuntu-2204
+          - ubuntu-latest
           - macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -112,7 +112,7 @@ jobs:
         with:
           tool: cargo-nextest
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
 
       # Run `tokio` with `full` features. This excludes testing utilities which
       # can alter the runtime behavior of Tokio.
@@ -131,7 +131,7 @@ jobs:
       matrix:
         os:
           - windows-latest
-          - blacksmith-2vcpu-ubuntu-2204
+          - ubuntu-latest
           - macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -144,7 +144,7 @@ jobs:
         with:
           tool: cargo-nextest
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
 
       # Test **all** crates in the workspace with all features.
       - name: test all --all-features
@@ -161,7 +161,7 @@ jobs:
       matrix:
         os:
           - windows-latest
-          - blacksmith-2vcpu-ubuntu-2204
+          - ubuntu-latest
           - macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -174,7 +174,7 @@ jobs:
         with:
           tool: cargo-nextest
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
 
       - name: test all --all-features panic=abort
         run: |
@@ -189,7 +189,7 @@ jobs:
       matrix:
         os:
           - windows-latest
-          - blacksmith-2vcpu-ubuntu-2204
+          - ubuntu-latest
           - macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -202,7 +202,7 @@ jobs:
         with:
           tool: cargo-hack
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
 
       # Run integration tests for each feature
       - name: test tests-integration --each-feature
@@ -230,7 +230,7 @@ jobs:
     # `tokio/tokio/tests/async_send_sync.rs`.
     name: compile tests with parking lot send guards
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_stable }}
@@ -242,7 +242,7 @@ jobs:
         # Inserts the line "plsend = ["parking_lot/send_guard"]" right after [features]
         run: sed -i '/\[features\]/a plsend = ["parking_lot/send_guard"]' tokio/Cargo.toml
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       - name: Check tests with all features enabled
         run: cargo check --workspace --all-features --tests
 
@@ -252,7 +252,7 @@ jobs:
     # their own test crate outside of the workspace.
     needs: basics
     name: test tokio instrumentation
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_stable }}
@@ -264,7 +264,7 @@ jobs:
         with:
           tool: cargo-nextest
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
 
       - name: test tracing-instrumentation
         run: |
@@ -277,7 +277,7 @@ jobs:
   valgrind:
     name: valgrind
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_stable }}
@@ -288,7 +288,7 @@ jobs:
       - name: Install Valgrind
         uses: taiki-e/install-action@valgrind
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       # Compile tests
       - name: cargo build test-mem
         run: cargo build --features rt-net --bin test-mem
@@ -315,7 +315,7 @@ jobs:
       matrix:
         include:
           - os: windows-latest
-          - os: blacksmith-2vcpu-ubuntu-2204
+          - os: ubuntu-latest
           - os: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -329,7 +329,7 @@ jobs:
         with:
           tool: cargo-nextest
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       # Run `tokio` with "unstable" cfg flag.
       - name: test tokio full --cfg unstable
         run: |
@@ -350,7 +350,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: blacksmith-2vcpu-ubuntu-2204
+          - os: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_stable }}
@@ -363,7 +363,7 @@ jobs:
         with:
           tool: cargo-nextest
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       # Run `tokio` with "unstable" and "taskdump" cfg flags.
       - name: test tokio full --cfg unstable --cfg taskdump
         run: |
@@ -384,7 +384,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: blacksmith-2vcpu-ubuntu-2204
+          - os: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_stable }}
@@ -395,7 +395,7 @@ jobs:
         uses: taiki-e/install-action@v2
         with:
           tool: cargo-nextest
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       # Run `tokio` with "unstable" and "taskdump" cfg flags.
       - name: check tokio full --cfg unstable --cfg internal-mt-counters
         run: |
@@ -412,7 +412,7 @@ jobs:
   miri:
     name: miri
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_miri_nightly }}
@@ -424,7 +424,7 @@ jobs:
         uses: taiki-e/install-action@v2
         with:
           tool: cargo-nextest
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       - name: miri
         run: |
           cargo miri nextest run --features full --lib --tests --no-fail-fast
@@ -435,7 +435,7 @@ jobs:
   asan:
     name: asan
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install llvm
@@ -446,7 +446,7 @@ jobs:
         with:
           toolchain: ${{ env.rust_nightly }}
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       - name: asan
         run: cargo test --workspace --all-features --target x86_64-unknown-linux-gnu --tests -- --test-threads 1 --nocapture
         env:
@@ -457,7 +457,7 @@ jobs:
   semver:
     name: semver
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Check semver
@@ -469,7 +469,7 @@ jobs:
   cross-check:
     name: cross-check
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         target:
@@ -484,7 +484,7 @@ jobs:
           toolchain: ${{ env.rust_stable }}
           target: ${{ matrix.target }}
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       - run: cargo check --workspace --all-features --target ${{ matrix.target }}
         env:
           RUSTFLAGS: --cfg tokio_unstable -Dwarnings
@@ -492,7 +492,7 @@ jobs:
   cross-check-tier3:
     name: cross-check-tier3
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         target:
@@ -509,14 +509,14 @@ jobs:
         uses: taiki-e/install-action@v2
         with:
           tool: cargo-hack
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       - run: cargo hack check -Zbuild-std --workspace --each-feature --target ${{ matrix.target.name }} --exclude-features "${{ matrix.target.exclude_features }}"
         env:
           RUSTFLAGS: --cfg tokio_unstable -Dwarnings
 
   cross-test-with-parking_lot:
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
@@ -544,7 +544,7 @@ jobs:
           target: ${{ matrix.target }}
           qemu: '7.2'
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       - name: Tests run with all features (including parking_lot)
         run: |
           set -euxo pipefail
@@ -556,7 +556,7 @@ jobs:
 
   cross-test-without-parking_lot:
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
@@ -587,7 +587,7 @@ jobs:
       - name: Remove `parking_lot` from `full` feature
         run: sed -i '0,/parking_lot/{/parking_lot/d;}' tokio/Cargo.toml
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       # The `tokio_no_parking_lot` cfg is here to ensure the `sed` above does not silently break.
       - name: Tests run with all features (without parking_lot)
         run: |
@@ -602,7 +602,7 @@ jobs:
   no-atomic-u64-test:
     name: Test tokio --all-features on i686-unknown-linux-gnu without AtomicU64
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_nightly }}
@@ -621,7 +621,7 @@ jobs:
           target: i686-unknown-linux-gnu
           qemu: '7.2'
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       - name: test tokio --all-features
         run: |
           cargo nextest run -Zbuild-std --target target-specs/i686-unknown-linux-gnu.json -p tokio --all-features
@@ -633,7 +633,7 @@ jobs:
   no-atomic-u64-check:
     name: Check tokio --feature-powerset --depth 2 on i686-unknown-linux-gnu without AtomicU64
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_nightly }}
@@ -646,7 +646,7 @@ jobs:
         with:
           tool: cargo-hack
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
 
       # https://github.com/tokio-rs/tokio/pull/5356
       # https://github.com/tokio-rs/tokio/issues/5373
@@ -658,7 +658,7 @@ jobs:
   features:
     name: features ${{ matrix.name }}
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
@@ -677,7 +677,7 @@ jobs:
       - name: Install cargo-hack
         uses: taiki-e/install-action@cargo-hack
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       - name: check --feature-powerset ${{ matrix.name }}
         run: cargo hack check --all --feature-powerset --depth 2 --keep-going
         env:
@@ -685,14 +685,14 @@ jobs:
 
   minrust:
     name: minrust
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_min }}
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: ${{ env.rust_min }}
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       - name: "check --workspace --all-features"
         run: cargo check --workspace --all-features
         env:
@@ -701,7 +701,7 @@ jobs:
   minimal-versions:
     name: minimal-versions
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_nightly }}
@@ -711,7 +711,7 @@ jobs:
       - name: Install cargo-hack
         uses: taiki-e/install-action@cargo-hack
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       - name: "check --all-features -Z minimal-versions"
         run: |
           # Remove dev-dependencies from Cargo.toml to prevent the next `cargo update`
@@ -733,7 +733,7 @@ jobs:
 
   fmt:
     name: fmt
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_stable }}
@@ -741,7 +741,7 @@ jobs:
         with:
           toolchain: ${{ env.rust_stable }}
           components: rustfmt
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       # Check fmt
       - name: "rustfmt --check"
         # Workaround for rust-lang/cargo#7732
@@ -753,7 +753,7 @@ jobs:
 
   clippy:
     name: clippy
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_clippy }}
@@ -761,21 +761,21 @@ jobs:
         with:
           toolchain: ${{ env.rust_clippy }}
           components: clippy
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       # Run clippy
       - name: "clippy --all"
         run: cargo clippy --all --tests --all-features --no-deps
 
   docs:
     name: docs
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_nightly }}
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: ${{ env.rust_nightly }}
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       - name: "doc --lib --all-features"
         run: |
           cargo doc --lib --no-deps --all-features --document-private-items
@@ -786,14 +786,14 @@ jobs:
   loom-compile:
     name: build loom tests
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_stable }}
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: ${{ env.rust_stable }}
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       - name: build --cfg loom
         run: cargo test --no-run --lib --features full
         working-directory: tokio
@@ -802,7 +802,7 @@ jobs:
 
   check-readme:
     name: Check README
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Verify that both READMEs are identical
@@ -820,7 +820,7 @@ jobs:
       matrix:
         os:
           - windows-latest
-          - blacksmith-2vcpu-ubuntu-2204
+          - ubuntu-latest
           - macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -851,7 +851,7 @@ jobs:
           git diff
         working-directory: hyper
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
         with:
           # The cargo workspaces and target directory configuration.
           # These entries are separated by newlines and have the form
@@ -872,7 +872,7 @@ jobs:
       matrix:
         os:
           - windows-latest
-          - blacksmith-2vcpu-ubuntu-2204
+          - ubuntu-latest
           - macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -899,7 +899,7 @@ jobs:
           git diff
         working-directory: quinn
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
         with:
           # The cargo workspaces and target directory configuration.
           # These entries are separated by newlines and have the form
@@ -917,7 +917,7 @@ jobs:
   x86_64-fortanix-unknown-sgx:
     name: build tokio for x86_64-fortanix-unknown-sgx
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_nightly }}
@@ -925,7 +925,7 @@ jobs:
         with:
           toolchain: ${{ env.rust_nightly }}
           target: x86_64-fortanix-unknown-sgx
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       # NOTE: Currently the only test we can run is to build tokio with rt and sync features.
       - name: build tokio
         run: cargo build --target x86_64-fortanix-unknown-sgx --features rt,sync
@@ -934,7 +934,7 @@ jobs:
   check-redox:
     name: build tokio for redox-os
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_nightly }}
@@ -949,7 +949,7 @@ jobs:
   wasm32-unknown-unknown:
     name: test tokio for wasm32-unknown-unknown
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust 1.81
@@ -959,7 +959,7 @@ jobs:
       - name: Install wasm-pack
         uses: taiki-e/install-action@wasm-pack
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       - name: test tokio
         run: wasm-pack test --node -- --features "macros sync"
         working-directory: tokio
@@ -967,7 +967,7 @@ jobs:
   wasm32-wasip1:
     name: ${{ matrix.target }}
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         target:
@@ -987,7 +987,7 @@ jobs:
         with:
           tool: cargo-hack,wasmtime,cargo-wasi
 
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       - name: WASI test tokio full
         run: cargo test -p tokio --target ${{ matrix.target }} --features full
         env:
@@ -1031,7 +1031,7 @@ jobs:
       matrix:
         os:
           - windows-latest
-          - blacksmith-2vcpu-ubuntu-2204
+          - ubuntu-latest
         rust:
           # `check-external-types` requires a specific Rust nightly version. See
           # the README for details: https://github.com/awslabs/cargo-check-external-types
@@ -1042,7 +1042,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: ${{ matrix.rust }}
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       - name: Install cargo-check-external-types
         uses: taiki-e/cache-cargo-install-action@v1
         with:
@@ -1057,7 +1057,7 @@ jobs:
   check-unexpected-lints-cfgs:
     name: check unexpected lints and cfgs
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_nightly }}
@@ -1074,14 +1074,14 @@ jobs:
   check-fuzzing:
     name: check-fuzzing
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_nightly }}
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: ${{ env.rust_nightly }}
-      - uses: useblacksmith/rust-cache@v3
+      - uses: Swatinem/rust-cache@v2
       - name: Install cargo-fuzz
         run: cargo install cargo-fuzz
       - name: Check /tokio/
@@ -1094,7 +1094,7 @@ jobs:
   check-spelling:
     name: check-spelling
     needs: basics
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust ${{ env.rust_stable }}
@@ -1127,4 +1127,3 @@ jobs:
           }
       - name: Run cargo-spellcheck
         run: cargo spellcheck --code 1
-
