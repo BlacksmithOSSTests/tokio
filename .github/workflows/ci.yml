@@ -1,8 +1,8 @@
 on:
   push:
-    branches: ["master", "tokio-*.x"]
+    branches: ["master", "tokio-*.x", "blacksmith-*"]
   pull_request:
-    branches: ["master", "tokio-*.x"]
+    branches: ["master", "tokio-*.x", "blacksmith-*"]
 
 name: CI
 
