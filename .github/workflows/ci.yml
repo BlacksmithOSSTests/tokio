@@ -1127,4 +1127,3 @@ jobs:
           }
       - name: Run cargo-spellcheck
         run: cargo spellcheck --code 1
-
